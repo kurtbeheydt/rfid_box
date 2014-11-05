@@ -27,6 +27,25 @@ Servo myservo;
 #define pixelPin 3
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(4, pixelPin, NEO_GRB + NEO_KHZ800);
 
+unsigned long lastMillis = 0;
+
+boolean fadeDirection = true;
+int color = 0;
+
+byte action;
+
+#define ACTION_STANDBY 0
+#define ACTION_SCANNING 1
+#define ACTION_WAITINGFORSCAN 2
+#define ACTION_WRONGSEQUENCE 3
+#define ACTION_OPENING 4
+#define ACTION_OPEN 5
+
+#define CARD1 66289AB5
+#define CARD2 2D5F9AB5
+#define CARD3 7EB59AB5
+
+
 void setup() {
   SPI.begin();
   
@@ -45,10 +64,20 @@ void setup() {
   // neoPixelstrip init
   strip.begin();
   strip.show();
+  
+  action = ACTION_STANDBY;
 }
 
 void loop() {
-  strip.Color(255, 0, 0);
+  switch (action) {
+    case ACTION_STANDBY:
+      standbymodus();
+    break;
+  }
+  
+  
+  setColor(255, 0, 0);
+  
   if (mfrc522.PICC_IsNewCardPresent()) {
     if (mfrc522.PICC_ReadCardSerial()) {
       lcd.setCursor(0,1);
@@ -64,4 +93,33 @@ void loop() {
       } 
     }
   }
+}
+
+void standbymodus() {
+  
+  if (fadeDirection == true) {
+    color = color + 2;    
+    if (color >= 250) {
+      fadeDirection = false;
+    } 
+  } else {
+    color = color - 2;    
+    if (color <= 30) {
+      fadeDirection = true;
+    }   
+  } 
+
+  for (int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, strip.Color(color, color, color));
+  }
+  strip.show();    
+
+}
+
+
+void setColor(int red, int green, int blue) {
+  for (int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, strip.Color(red, green, blue));
+   }
+  strip.show();
 }
