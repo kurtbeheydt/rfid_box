@@ -50,8 +50,9 @@ byte action;
 #define MESSAGE_OPEN      "Veel plezier!  "
 #define MESSAGE_EMPTY     "               "
 
-String cardids[] = {"66289ab5", "2d5f9ab5", "7eb59ab5"};
-int CARD_COUNT = 3;
+String cardids[] = {"a31796f4", "66289ab5", "73d391f4", "7eb59ab5", "2d5f9ab5"};
+String masterid = "6098bf6e";
+int CARD_COUNT = 5;
 int lastCardScanned = 0;
 String lastCardIdScanned;
 unsigned long CardScanLastMillis = 0;
@@ -91,7 +92,7 @@ void loop() {
     case ACTION_SCANNING:
       standbymodusLights();
     break;
-    
+     
     case ACTION_WAITINGFORNEXTSCAN:
       readCard();
       statusLights();
@@ -108,7 +109,7 @@ void loop() {
     
     case ACTION_WRONGSEQUENCE:
       wrongLights();
-      delay(2000);
+      delay(1000);
       action = ACTION_STANDBY;
     break;
     
@@ -162,7 +163,9 @@ void readCard() {
             
       if (lastCardIdScanned != cardId) {
         lastCardIdScanned = cardId;
-        if (lastCardIdScanned == cardids[lastCardScanned]) {
+        if (lastCardIdScanned == masterid) {
+          action = ACTION_OPEN;
+        } else if (lastCardIdScanned == cardids[lastCardScanned]) {
           lastCardScanned++;
           if (lastCardScanned >= CARD_COUNT) { // all cards are scanned
             action = ACTION_OPENING;
@@ -214,7 +217,7 @@ void openingLights() {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, strip.Color(0, 0, 0));
   }
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 2; i++) {
     strip.setPixelColor(0, strip.Color(0, 0, 200));
     strip.show();
     delay(500);
