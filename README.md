@@ -1,5 +1,5 @@
-rfid_box
-========
+rfid treasure box
+=================
 
 Box with rfid reader, lcd display and servo to open the box.
 Built as a treasure hunt for a birthday party of 7-year old daughter.
